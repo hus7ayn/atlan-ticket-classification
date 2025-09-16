@@ -32,13 +32,15 @@ class TavilyClient:
             Topic: {topic}
             
             Please provide a comprehensive search query that includes:
-            - Key technical terms
-            - Specific feature names
+            - Key technical terms specific to Atlan
+            - Atlan feature names and capabilities
             - Action words and verbs
             - Context and requirements
             - Specific use cases mentioned
+            - Atlan-specific terminology (data catalog, lineage, governance, etc.)
             
-            Make the search query detailed and specific to help find the most relevant and comprehensive documentation.
+            Focus on Atlan-specific terms and avoid generic programming concepts.
+            Make the search query detailed and specific to help find the most relevant Atlan documentation.
             Return only the search terms and context, no explanations.
             Keep it under 300 characters total.
             """
@@ -76,18 +78,20 @@ class TavilyClient:
             # Optimize the query for Tavily (handle long queries)
             optimized_query = self.optimize_query_for_tavily(query, topic)
             
-            # Determine the appropriate knowledge base
+            # Determine the appropriate knowledge base and construct Atlan-specific search query
             if topic.lower() in ["api/sdk"]:
                 knowledge_base = self.knowledge_base["api_sdk"]
-                search_query = f"site:developer.atlan.com {optimized_query}"
+                search_query = f"Atlan API SDK {optimized_query} developer documentation"
             elif topic.lower() in ["how-to", "product", "best practices", "sso"]:
                 knowledge_base = self.knowledge_base["product"]
-                search_query = f"site:docs.atlan.com {optimized_query}"
+                search_query = f"Atlan {optimized_query} documentation guide tutorial"
+            elif topic.lower() in ["connector", "lineage", "glossary", "sensitive data"]:
+                knowledge_base = self.knowledge_base["product"]
+                search_query = f"Atlan {topic} {optimized_query} data catalog governance"
             else:
-                return {
-                    "success": False,
-                    "error": f"Tavily search not supported for topic: {topic}"
-                }
+                # For other topics, use a general Atlan-focused search
+                knowledge_base = self.knowledge_base["product"]
+                search_query = f"Atlan {optimized_query} data catalog platform"
             
             # Perform Tavily search
             search_results = self._perform_search(search_query)
@@ -175,9 +179,18 @@ class TavilyClient:
     
     def _perform_search(self, query: str) -> Dict[str, any]:
         """
-        Perform Tavily search
+        Perform Tavily search with Atlan-specific domain restrictions
         """
         try:
+            # Define Atlan-specific domains to focus the search
+            atlan_domains = [
+                "developer.atlan.com",
+                "docs.atlan.com", 
+                "atlan.com",
+                "help.atlan.com",
+                "support.atlan.com"
+            ]
+            
             payload = {
                 "api_key": self.api_key,
                 "query": query,
@@ -185,8 +198,15 @@ class TavilyClient:
                 "include_answer": True,
                 "include_raw_content": True,  # Include raw content for more detailed responses
                 "max_results": 8,  # Get more results for comprehensive answers
-                "include_domains": [],
-                "exclude_domains": [],
+                "include_domains": atlan_domains,  # Focus on Atlan domains only
+                "exclude_domains": [
+                    "stackoverflow.com",
+                    "quora.com", 
+                    "reddit.com",
+                    "medium.com",
+                    "dev.to",
+                    "github.com"
+                ],  # Exclude generic programming sites
                 "answer_style": "detailed",  # Request detailed answers
                 "answer_length": "long"  # Request longer, more comprehensive answers
             }
@@ -200,11 +220,25 @@ class TavilyClient:
             
             if response.status_code == 200:
                 data = response.json()
+                results = data.get("results", [])
+                sources = [result.get("url", "") for result in results]
+                answer = data.get("answer", "")
+                
+                # Check if we got Atlan-specific results
+                atlan_sources = [s for s in sources if any(domain in s for domain in atlan_domains)]
+                
+                # If we don't have enough Atlan-specific results, try a broader search
+                if len(atlan_sources) < 2 and len(results) > 0:
+                    print(f"⚠️ Limited Atlan-specific results found. Got {len(atlan_sources)} Atlan sources out of {len(sources)} total.")
+                    # Try a more specific Atlan search
+                    return self._fallback_atlan_search(query)
+                
                 return {
                     "success": True,
-                    "results": data.get("results", []),
-                    "sources": [result.get("url", "") for result in data.get("results", [])],
-                    "answer": data.get("answer", "")
+                    "results": results,
+                    "sources": sources,
+                    "answer": answer,
+                    "atlan_sources_count": len(atlan_sources)
                 }
             else:
                 return {
@@ -265,6 +299,70 @@ class TavilyClient:
         Check if a topic supports Tavily search
         """
         return topic in self.get_supported_topics()
+    
+    def _fallback_atlan_search(self, query: str) -> Dict[str, any]:
+        """
+        Fallback search with more specific Atlan terms when initial search doesn't return enough Atlan results
+        """
+        try:
+            # Try a more specific Atlan search
+            atlan_specific_query = f"Atlan data catalog platform {query} documentation"
+            
+            payload = {
+                "api_key": self.api_key,
+                "query": atlan_specific_query,
+                "search_depth": "basic",
+                "include_answer": True,
+                "include_raw_content": True,
+                "max_results": 5,
+                "include_domains": ["developer.atlan.com", "docs.atlan.com"],
+                "exclude_domains": [
+                    "stackoverflow.com",
+                    "quora.com", 
+                    "reddit.com",
+                    "medium.com",
+                    "dev.to"
+                ],
+                "answer_style": "detailed",
+                "answer_length": "medium"
+            }
+            
+            response = requests.post(
+                self.api_url,
+                json=payload,
+                headers={"Content-Type": "application/json"},
+                timeout=30
+            )
+            
+            if response.status_code == 200:
+                data = response.json()
+                results = data.get("results", [])
+                sources = [result.get("url", "") for result in results]
+                answer = data.get("answer", "")
+                
+                # If still no good results, provide a helpful message
+                if len(sources) == 0 or not any("atlan.com" in s for s in sources):
+                    answer = f"I couldn't find specific Atlan documentation for your query: '{query}'. This might be because:\n\n1. The feature you're asking about might be newer or not yet documented\n2. The terminology might be different in Atlan's documentation\n3. The feature might be available through a different name\n\nI recommend checking the official Atlan documentation at https://docs.atlan.com/ or the developer portal at https://developer.atlan.com/ for the most up-to-date information."
+                    sources = ["https://docs.atlan.com/", "https://developer.atlan.com/"]
+                
+                return {
+                    "success": True,
+                    "results": results,
+                    "sources": sources,
+                    "answer": answer,
+                    "atlan_sources_count": len([s for s in sources if "atlan.com" in s])
+                }
+            else:
+                return {
+                    "success": False,
+                    "error": f"Fallback search failed: {response.status_code} - {response.text}"
+                }
+                
+        except Exception as e:
+            return {
+                "success": False,
+                "error": f"Error in fallback search: {str(e)}"
+            }
 
 class TicketResponseGenerator:
     """
