@@ -1,0 +1,484 @@
+{
+  "summary": {
+    "total_tickets": 30,
+    "successful_classifications": 30,
+    "failed_classifications": 0,
+    "success_rate": "100.0%"
+  },
+  "distributions": {
+    "topics": {
+      "Connector": 3,
+      "Lineage": 4,
+      "How-to": 4,
+      "API/SDK": 6,
+      "Glossary": 1,
+      "Product": 2,
+      "Sensitive data": 4,
+      "Best practices": 4,
+      "SSO": 2
+    },
+    "sentiments": {
+      "Frustrated": 8,
+      "Curious": 18,
+      "Concerned": 3,
+      "Neutral": 1
+    },
+    "priorities": {
+      "P0": 5,
+      "P1": 19,
+      "P2": 6
+    }
+  },
+  "detailed_results": [
+    {
+      "ticket_id": "TICKET-245",
+      "subject": "Connecting Snowflake to Atlan - required permissions?",
+      "classification": {
+        "topic_tag": "Connector",
+        "sentiment": "Frustrated",
+        "priority": "P0",
+        "reasoning": {
+          "topic_reasoning": "The ticket explicitly mentions issues connecting Snowflake to Atlan, indicating a connector problem.",
+          "sentiment_reasoning": "The user states the connection is failing and their entire BI team is blocked, clearly expressing frustration.",
+          "priority_reasoning": "The user highlights the urgency due to a major upcoming project being blocked, demanding a P0 priority."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-246",
+      "subject": "Which connectors automatically capture lineage?",
+      "classification": {
+        "topic_tag": "Lineage",
+        "sentiment": "Curious",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The ticket explicitly asks about Atlan's lineage capabilities and how different connectors handle lineage capture.",
+          "sentiment_reasoning": "The user is seeking information and clarification, demonstrating a curious and exploratory tone.",
+          "priority_reasoning": "While not urgent, understanding lineage is important for the user's workflow and presenting data flow to leadership. It's a standard support need."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-247",
+      "subject": "Deployment of Atlan agent for private data lake",
+      "classification": {
+        "topic_tag": "Connector",
+        "sentiment": "Frustrated",
+        "priority": "P0",
+        "reasoning": {
+          "topic_reasoning": "The ticket explicitly mentions issues with deploying the Atlan agent for a data source connection.",
+          "sentiment_reasoning": "The user expresses that the setup instructions are confusing and their rollout is blocked, indicating frustration.",
+          "priority_reasoning": "The user states this is a critical data source and they are unable to proceed without a solution, making it a high priority issue."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-248",
+      "subject": "How to surface sample rows and schema changes?",
+      "classification": {
+        "topic_tag": "How-to",
+        "sentiment": "Curious",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The user is asking for instructions on how to view sample data and schema changes within Atlan.",
+          "sentiment_reasoning": "The user's tone is polite and inquisitive, seeking information rather than expressing frustration.",
+          "priority_reasoning": "While important for data analysts, this is not a critical issue blocking work. It's a standard support request for feature clarification."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-249",
+      "subject": "Exporting lineage view for a specific table",
+      "classification": {
+        "topic_tag": "Lineage",
+        "sentiment": "Concerned",
+        "priority": "P0",
+        "reasoning": {
+          "topic_reasoning": "The ticket explicitly requests information about exporting a data lineage view.",
+          "sentiment_reasoning": "The user expresses a need due to a deadline and compliance requirements, indicating concern.",
+          "priority_reasoning": "The user has a hard deadline for a compliance requirement, making it a high priority issue."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-250",
+      "subject": "Importing lineage from Airflow jobs",
+      "classification": {
+        "topic_tag": "Lineage",
+        "sentiment": "Curious",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The ticket explicitly asks about importing lineage from Airflow jobs and mapping DAGs to datasets, indicating a focus on data lineage features.",
+          "sentiment_reasoning": "The user expresses a need and seeks information, demonstrating curiosity rather than frustration or anger.",
+          "priority_reasoning": "While not a critical blocker, understanding lineage mapping is important for data understanding and workflow visualization, making it a medium priority support need."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-251",
+      "subject": "Using the Visual Query Builder",
+      "classification": {
+        "topic_tag": "How-to",
+        "sentiment": "Curious",
+        "priority": "P2",
+        "reasoning": {
+          "topic_reasoning": "The user is asking for guidance on how to use a specific feature (Visual Query Builder).",
+          "sentiment_reasoning": "The user expresses excitement and a desire to learn, indicating curiosity rather than frustration.",
+          "priority_reasoning": "The issue is a learning question and not blocking the user's work. It can be addressed with a tutorial or guide."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-252",
+      "subject": "Programmatic extraction of lineage",
+      "classification": {
+        "topic_tag": "API/SDK",
+        "sentiment": "Curious",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The ticket explicitly asks about programmatic access to lineage data via an API and requests endpoint information.",
+          "sentiment_reasoning": "The user is seeking information and examples, indicating a curious and exploratory tone.",
+          "priority_reasoning": "While important, the request is not blocking work or urgent. It falls under standard support needs."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-253",
+      "subject": "Upstream lineage to Snowflake view not working",
+      "classification": {
+        "topic_tag": "Lineage",
+        "sentiment": "Frustrated",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The ticket explicitly mentions issues with upstream lineage not working in Atlan.",
+          "sentiment_reasoning": "The user expresses frustration with the issue using phrases like 'infuriating' and 'huge problem'.",
+          "priority_reasoning": "While not explicitly stated as blocking work, the user highlights the impact on trust in the data, suggesting a significant impact on their workflow."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-254",
+      "subject": "How to create a business glossary and link terms in bulk?",
+      "classification": {
+        "topic_tag": "Glossary",
+        "sentiment": "Frustrated",
+        "priority": "P0",
+        "reasoning": {
+          "topic_reasoning": "The ticket explicitly asks about creating and linking business glossary terms, making 'Glossary' the most relevant topic tag.",
+          "sentiment_reasoning": "The user expresses frustration due to the time-consuming manual process and states it's blocking their entire governance initiative.",
+          "priority_reasoning": "The user highlights that this issue is blocking their entire governance initiative, indicating a critical need for a solution and justifying a P0 priority."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-255",
+      "subject": "Creating a custom role for data stewards",
+      "classification": {
+        "topic_tag": "How-to",
+        "sentiment": "Curious",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The user is asking for specific instructions on how to create a custom role with defined permissions.",
+          "sentiment_reasoning": "The user's tone is polite and seeking information, indicating curiosity rather than frustration or anger.",
+          "priority_reasoning": "While important, this request is not blocking work or urgent. It falls under standard support needs."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-256",
+      "subject": "Mapping Active Directory groups to Atlan teams",
+      "classification": {
+        "topic_tag": "Product",
+        "sentiment": "Curious",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The user is asking about a feature related to Atlan's core functionality: mapping AD groups to teams.",
+          "sentiment_reasoning": "The user's tone is polite and seeking information, not expressing frustration or anger.",
+          "priority_reasoning": "While important for user access management, this is not a critical blocker preventing work. It's a standard support need."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-257",
+      "subject": "RBAC for assets vs. glossaries",
+      "classification": {
+        "topic_tag": "Sensitive data",
+        "sentiment": "Concerned",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The ticket specifically addresses PII governance and access control, making it a sensitive data concern.",
+          "sentiment_reasoning": "The user expresses a need to ensure airtight PII governance, indicating concern about potential data exposure.",
+          "priority_reasoning": "While not a critical blocker, ensuring proper PII handling is important and requires timely attention."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-258",
+      "subject": "Process for onboarding asset owners",
+      "classification": {
+        "topic_tag": "Best practices",
+        "sentiment": "Curious",
+        "priority": "P2",
+        "reasoning": {
+          "topic_reasoning": "The user is asking for a recommended workflow, indicating a question about best practices for asset ownership in Atlan.",
+          "sentiment_reasoning": "The user's tone is neutral and inquisitive, seeking information rather than expressing frustration or dissatisfaction.",
+          "priority_reasoning": "While important, the request is not urgent or blocking. It's a general question about workflow and best practices."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-259",
+      "subject": "How does Atlan surface sensitive fields like PII?",
+      "classification": {
+        "topic_tag": "Sensitive data",
+        "sentiment": "Curious",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The ticket directly addresses concerns about PII identification and handling, falling under the 'Sensitive data' category.",
+          "sentiment_reasoning": "The user is asking questions to understand Atlan's capabilities regarding sensitive data, indicating a curious and exploratory tone.",
+          "priority_reasoning": "While important, the query doesn't indicate an immediate blocker or urgent need. It's a standard support request for information about a specific feature."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-260",
+      "subject": "Authentication methods for APIs and SDKs",
+      "classification": {
+        "topic_tag": "API/SDK",
+        "sentiment": "Curious",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The ticket explicitly asks about authentication methods for the Atlan API and Python SDK.",
+          "sentiment_reasoning": "The user is seeking information and clarification, demonstrating a curious tone.",
+          "priority_reasoning": "While not blocking, understanding API authentication is crucial for development and falls under standard support needs."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-261",
+      "subject": "Enabling and testing SAML SSO",
+      "classification": {
+        "topic_tag": "SSO",
+        "sentiment": "Concerned",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The ticket explicitly mentions SAML SSO configuration and testing.",
+          "sentiment_reasoning": "The user expresses concern about disrupting users if the configuration is incorrect.",
+          "priority_reasoning": "While not a critical blocker, enabling SSO requires careful configuration and testing. It's important to address the user's concern promptly to avoid potential issues."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-262",
+      "subject": "SSO login not assigning user to correct group",
+      "classification": {
+        "topic_tag": "SSO",
+        "sentiment": "Frustrated",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The ticket explicitly mentions issues with SSO login and user group assignment.",
+          "sentiment_reasoning": "The user states that the issue is preventing them from accessing assets, indicating frustration.",
+          "priority_reasoning": "While not a critical blocker, the issue prevents the user from performing their work, making it a medium priority."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-263",
+      "subject": "Integration with existing DLP or secrets manager",
+      "classification": {
+        "topic_tag": "Sensitive data",
+        "sentiment": "Curious",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The ticket explicitly mentions DLP and secrets manager, indicating a concern for handling sensitive data and security.",
+          "sentiment_reasoning": "The user is asking a question to understand Atlan's capabilities, not expressing frustration or anger.",
+          "priority_reasoning": "While not a critical blocker, understanding Atlan's security integrations is important for many users and should be addressed in a timely manner."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-264",
+      "subject": "Accessing audit logs for compliance reviews",
+      "classification": {
+        "topic_tag": "Sensitive data",
+        "sentiment": "Neutral",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The ticket explicitly mentions compliance reviews and the need for audit logs to track data access and permission changes, indicating a concern for data security and compliance.",
+          "sentiment_reasoning": "The user's tone is professional and straightforward, seeking information rather than expressing strong emotions.",
+          "priority_reasoning": "While not a critical blocking issue, access to audit logs is important for compliance purposes and should be addressed in a timely manner."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-265",
+      "subject": "How to programmatically create an asset using the REST API?",
+      "classification": {
+        "topic_tag": "API/SDK",
+        "sentiment": "Frustrated",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The ticket explicitly asks for help with the REST API and provides code examples.",
+          "sentiment_reasoning": "The user mentions 'requests keep failing' and 'API documentation is a bit sparse', indicating frustration.",
+          "priority_reasoning": "While not blocking, the user needs assistance to complete a task, making it a medium priority."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-266",
+      "subject": "SDK availability and Python example",
+      "classification": {
+        "topic_tag": "API/SDK",
+        "sentiment": "Curious",
+        "priority": "P2",
+        "reasoning": {
+          "topic_reasoning": "The user is specifically asking about SDK availability and Python examples, indicating a technical question related to APIs or SDKs.",
+          "sentiment_reasoning": "The user's tone is polite and inquisitive, seeking information rather than expressing frustration or anger.",
+          "priority_reasoning": "The request is for information and guidance, not an urgent issue blocking work or requiring immediate attention."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-267",
+      "subject": "How do webhooks work in Atlan?",
+      "classification": {
+        "topic_tag": "API/SDK",
+        "sentiment": "Curious",
+        "priority": "P2",
+        "reasoning": {
+          "topic_reasoning": "The ticket focuses on understanding how webhooks work in Atlan, specifically regarding event triggers and payload validation, which are technical aspects related to the API.",
+          "sentiment_reasoning": "The user is asking exploratory questions about webhook functionality, indicating a desire to learn and understand.",
+          "priority_reasoning": "The ticket doesn't express any urgency or indicate a blocking issue. It's a general inquiry about a feature."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-268",
+      "subject": "Triggering an AWS Lambda from Atlan events",
+      "classification": {
+        "topic_tag": "API/SDK",
+        "sentiment": "Curious",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The ticket asks about integrating Atlan with an external AWS Lambda function, implying a need for API/SDK knowledge.",
+          "sentiment_reasoning": "The user is seeking information and guidance on the best approach, indicating a curious tone.",
+          "priority_reasoning": "While not urgent, integrating with external systems is important for many users and requires technical support."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-269",
+      "subject": "When to use Atlan automations vs. external services?",
+      "classification": {
+        "topic_tag": "Best practices",
+        "sentiment": "Curious",
+        "priority": "P2",
+        "reasoning": {
+          "topic_reasoning": "The user is seeking guidance on when to use Atlan's native automations versus external tools, indicating a question about recommended approaches.",
+          "sentiment_reasoning": "The user's tone is inquisitive and seeking information, not expressing frustration, anger, or concern.",
+          "priority_reasoning": "The question is about best practices and workflow decisions, not a critical issue blocking work or requiring immediate attention."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-270",
+      "subject": "Connector failed to crawl - where to check logs?",
+      "classification": {
+        "topic_tag": "Connector",
+        "sentiment": "Frustrated",
+        "priority": "P0",
+        "reasoning": {
+          "topic_reasoning": "The ticket explicitly mentions a failed connector (Snowflake crawler) and seeks logs related to the connector.",
+          "sentiment_reasoning": "The user uses urgent language ('URGENT'), highlights the critical impact of the failure, and expresses a need to fix it ASAP, indicating frustration.",
+          "priority_reasoning": "The user states the failure is critical, impacting morning reports and lineage information, making it a high priority issue."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-271",
+      "subject": "Asset extracted but not published to Atlan",
+      "classification": {
+        "topic_tag": "Product",
+        "sentiment": "Frustrated",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The user is reporting an issue with an asset not appearing in the Atlan UI after successful extraction, indicating a problem with the core product functionality.",
+          "sentiment_reasoning": "The user expresses confusion and frustration with the unexpected behavior, using phrases like 'very strange' and 'stuck somewhere'.",
+          "priority_reasoning": "While not blocking critical work, the issue prevents the user from accessing and utilizing the extracted asset, impacting their workflow and requiring timely resolution."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-272",
+      "subject": "How to measure adoption and generate reports?",
+      "classification": {
+        "topic_tag": "How-to",
+        "sentiment": "Curious",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The user is asking for specific instructions on how to generate reports within Atlan.",
+          "sentiment_reasoning": "The user's tone is neutral and inquisitive, seeking information rather than expressing frustration or anger.",
+          "priority_reasoning": "While important for the user, this request is not blocking their work and can be addressed within standard support timelines."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-273",
+      "subject": "Best practices for catalog hygiene",
+      "classification": {
+        "topic_tag": "Best practices",
+        "sentiment": "Curious",
+        "priority": "P2",
+        "reasoning": {
+          "topic_reasoning": "The user is explicitly asking for best practices regarding catalog hygiene.",
+          "sentiment_reasoning": "The user expresses a concern but not frustration or anger. Their tone is inquisitive.",
+          "priority_reasoning": "This is a general question about best practices, not an urgent issue blocking work."
+        }
+      },
+      "status": "success"
+    },
+    {
+      "ticket_id": "TICKET-274",
+      "subject": "How to scale Atlan across multiple business units?",
+      "classification": {
+        "topic_tag": "Best practices",
+        "sentiment": "Curious",
+        "priority": "P1",
+        "reasoning": {
+          "topic_reasoning": "The ticket asks for advice on structuring Atlan for multiple business units, indicating a need for best practices guidance.",
+          "sentiment_reasoning": "The user is seeking information and exploring options, demonstrating a curious tone.",
+          "priority_reasoning": "While not critical, the question relates to a significant implementation decision and requires timely support to ensure a successful global rollout."
+        }
+      },
+      "status": "success"
+    }
+  ]
+}
