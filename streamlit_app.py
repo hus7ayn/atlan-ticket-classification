@@ -161,11 +161,18 @@ def display_statistics(report):
     
     with col4:
         success_rate = report['summary']['success_rate']
+        # Handle both string and numeric success_rate values
+        if isinstance(success_rate, str):
+            # Extract numeric value from string like "100.0%"
+            success_rate_num = float(success_rate.replace('%', ''))
+        else:
+            success_rate_num = float(success_rate)
+        
         st.metric(
             label="Success Rate",
-            value=f"{success_rate:.1f}%",
-            delta=f"{success_rate:.1f}%" if success_rate >= 90 else f"{success_rate:.1f}%",
-            delta_color="normal" if success_rate >= 90 else "off",
+            value=f"{success_rate_num:.1f}%",
+            delta=f"{success_rate_num:.1f}%" if success_rate_num >= 90 else f"{success_rate_num:.1f}%",
+            delta_color="normal" if success_rate_num >= 90 else "off",
             help="Classification success rate"
         )
     
@@ -414,7 +421,14 @@ def display_statistics(report):
     col1, col2, col3 = st.columns(3)
     
     with col1:
-        st.info(f"**Processing Summary:** {report['summary']['total_tickets']} tickets processed with {report['summary']['success_rate']:.1f}% success rate")
+        # Handle success_rate formatting
+        success_rate = report['summary']['success_rate']
+        if isinstance(success_rate, str):
+            success_rate_display = success_rate
+        else:
+            success_rate_display = f"{float(success_rate):.1f}%"
+        
+        st.info(f"**Processing Summary:** {report['summary']['total_tickets']} tickets processed with {success_rate_display} success rate")
     
     with col2:
         most_common_topic = max(report['distributions']['topics'].items(), key=lambda x: x[1])[0] if report['distributions']['topics'] else "N/A"
