@@ -10,6 +10,7 @@ import plotly.graph_objects as go
 from datetime import datetime
 import json
 import time
+import uuid
 
 # Import our modules
 from ticket_classifier import TicketClassifier
@@ -266,7 +267,7 @@ def display_statistics(report):
                     showlegend=True,
                     legend=dict(orientation="v", yanchor="middle", y=0.5, xanchor="left", x=1.01)
                 )
-                st.plotly_chart(fig_topics, use_container_width=True, key=f"topic_pie_chart_{hash(str(report))}")
+                st.plotly_chart(fig_topics, use_container_width=True, key=f"topic_pie_chart_{uuid.uuid4().hex[:8]}")
         
         with col2:
             # Sentiment distribution with enhanced styling
@@ -281,23 +282,23 @@ def display_statistics(report):
                     'Positive': '#32CD32'      # Lime Green
                 }
                 
-            fig_sentiment = px.bar(
-                x=list(sentiment_data.keys()),
-                y=list(sentiment_data.values()),
-                title="Sentiment Distribution",
-                color=list(sentiment_data.keys()),
-                color_discrete_map=sentiment_colors
-            )
-            fig_sentiment.update_layout(
-                xaxis_title="Sentiment", 
-                yaxis_title="Count",
-                showlegend=False,
-                hovermode='x unified'
-            )
-            fig_sentiment.update_traces(
-                hovertemplate='<b>%{x}</b><br>Count: %{y}<extra></extra>'
-            )
-            st.plotly_chart(fig_sentiment, use_container_width=True, key=f"sentiment_bar_chart_{hash(str(report))}")
+                fig_sentiment = px.bar(
+                    x=list(sentiment_data.keys()),
+                    y=list(sentiment_data.values()),
+                    title="Sentiment Distribution",
+                    color=list(sentiment_data.keys()),
+                    color_discrete_map=sentiment_colors
+                )
+                fig_sentiment.update_layout(
+                    xaxis_title="Sentiment", 
+                    yaxis_title="Count",
+                    showlegend=False,
+                    hovermode='x unified'
+                )
+                fig_sentiment.update_traces(
+                    hovertemplate='<b>%{x}</b><br>Count: %{y}<extra></extra>'
+                )
+                st.plotly_chart(fig_sentiment, use_container_width=True, key=f"sentiment_bar_chart_{uuid.uuid4().hex[:8]}")
         
         # Priority distribution
         priority_data = report['distributions']['priorities']
@@ -326,7 +327,7 @@ def display_statistics(report):
             fig_priority.update_traces(
                 hovertemplate='<b>%{x}</b><br>Count: %{y}<extra></extra>'
             )
-            st.plotly_chart(fig_priority, use_container_width=True, key=f"priority_bar_chart_{hash(str(report))}")
+            st.plotly_chart(fig_priority, use_container_width=True, key=f"priority_bar_chart_{uuid.uuid4().hex[:8]}")
     
     with tab2:
         # Topic Analysis
