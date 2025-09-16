@@ -171,7 +171,7 @@ def display_statistics(report):
                 color_discrete_sequence=px.colors.qualitative.Set3
             )
             fig_topics.update_traces(textposition='inside', textinfo='percent+label')
-            st.plotly_chart(fig_topics, use_container_width=True, key="topic_pie_chart")
+            st.plotly_chart(fig_topics, use_container_width=True, key=f"topic_pie_chart_{hash(str(report))}")
     
     with col2:
         # Sentiment distribution
@@ -185,7 +185,7 @@ def display_statistics(report):
                 color_continuous_scale="Viridis"
             )
             fig_sentiment.update_layout(xaxis_title="Sentiment", yaxis_title="Count")
-            st.plotly_chart(fig_sentiment, use_container_width=True, key="sentiment_bar_chart")
+            st.plotly_chart(fig_sentiment, use_container_width=True, key=f"sentiment_bar_chart_{hash(str(report))}")
     
     # Priority distribution
     priority_data = report['distributions']['priorities']
@@ -198,7 +198,7 @@ def display_statistics(report):
             color_continuous_scale="Reds"
         )
         fig_priority.update_layout(xaxis_title="Priority", yaxis_title="Count")
-        st.plotly_chart(fig_priority, use_container_width=True, key="priority_bar_chart")
+        st.plotly_chart(fig_priority, use_container_width=True, key=f"priority_bar_chart_{hash(str(report))}")
 
 def process_query_with_grok_summary(query):
     """Process query and get Grok-summarized response"""
