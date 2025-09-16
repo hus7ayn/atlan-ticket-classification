@@ -118,63 +118,77 @@ class TavilyClient:
     
     def _enhance_response(self, answer: str, original_query: str, topic: str, search_results: List[Dict]) -> str:
         """
-        Enhance Tavily's response to be more detailed and tailored to the user's query
+        Use Grok to enhance and tailor Tavily's response to be more specific and helpful
         """
         try:
-            # If the answer is already comprehensive (more than 200 characters), return as is
-            if len(answer) > 200:
-                return answer
-            
-            # If we have search results, use them to provide more context
+            # Prepare context from search results
+            context_info = ""
             if search_results and len(search_results) > 0:
-                # Extract key information from search results
-                additional_context = []
-                for result in search_results[:3]:  # Use top 3 results
+                context_parts = []
+                for i, result in enumerate(search_results[:5], 1):  # Use top 5 results
                     title = result.get('title', '')
                     content = result.get('content', '')
+                    url = result.get('url', '')
                     if title and content:
-                        # Extract relevant snippets
-                        snippet = content[:300] + "..." if len(content) > 300 else content
-                        additional_context.append(f"**{title}**: {snippet}")
+                        # Extract relevant snippets (longer for better context)
+                        snippet = content[:500] + "..." if len(content) > 500 else content
+                        context_parts.append(f"Source {i} - {title}:\n{snippet}\nURL: {url}")
                 
-                if additional_context:
-                    enhanced_answer = f"{answer}\n\n**Additional Details:**\n\n" + "\n\n".join(additional_context)
-                    return enhanced_answer
+                if context_parts:
+                    context_info = "\n\n".join(context_parts)
             
-            # If answer is too short, try to expand it with context
-            if len(answer) < 100:
-                context_prompt = f"""
-                The user asked: "{original_query}"
-                Topic: {topic}
-                
-                The current answer is: "{answer}"
-                
-                Please provide a more detailed and comprehensive answer that directly addresses the user's specific question.
-                Include:
-                - Step-by-step instructions if applicable
-                - Specific examples or use cases
-                - Important considerations or prerequisites
-                - Links to relevant documentation sections
-                
-                Make it detailed and actionable for the user.
-                """
-                
-                # Use Grok to enhance the response
-                result = self.grok_client.classify_ticket({
-                    'id': 'ENHANCE_RESPONSE',
-                    'subject': 'Enhance Response',
-                    'body': context_prompt
-                })
-                
-                if result.get('status') == 'success':
-                    enhanced = result.get('classification', {}).get('reasoning', {}).get('topic_reasoning', '')
-                    if enhanced and len(enhanced) > len(answer):
-                        return enhanced
+            # Create a comprehensive prompt for Grok to tailor the response
+            enhancement_prompt = f"""
+            You are an expert Atlan documentation assistant. A user asked: "{original_query}"
+            
+            Topic Category: {topic}
+            
+            Tavily search provided this initial answer: "{answer}"
+            
+            Additional context from Atlan documentation:
+            {context_info}
+            
+            Please provide a comprehensive, well-structured response that:
+            1. Directly answers the user's specific question
+            2. Uses the provided context to give accurate, detailed information
+            3. Includes step-by-step instructions where applicable
+            4. Mentions specific Atlan features, settings, or configurations
+            5. Provides practical examples or use cases
+            6. Includes important considerations, prerequisites, or troubleshooting tips
+            7. References specific documentation sections when relevant
+            8. Is written in a helpful, professional tone
+            
+            Structure your response with clear headings and bullet points for easy reading.
+            Focus on being actionable and specific to Atlan's platform.
+            """
+            
+            # Use Grok to generate a tailored response
+            result = self.grok_client.classify_ticket({
+                'id': 'ENHANCE_RESPONSE',
+                'subject': f'Enhance Response for: {original_query[:50]}...',
+                'body': enhancement_prompt
+            })
+            
+            if result.get('status') == 'success':
+                # Extract the enhanced response from Grok's reasoning
+                enhanced = result.get('classification', {}).get('reasoning', {}).get('topic_reasoning', '')
+                if enhanced and len(enhanced) > len(answer):
+                    return enhanced
+                else:
+                    # Fallback to summary if reasoning is not available
+                    summary = result.get('summary', '')
+                    if summary and len(summary) > len(answer):
+                        return summary
+            
+            # If Grok enhancement fails, return the original answer with basic context
+            if context_info:
+                return f"{answer}\n\n**Additional Context:**\n{context_info[:1000]}..."
             
             return answer
             
         except Exception as e:
-            print(f"Error enhancing response: {e}")
+            print(f"Error enhancing response with Grok: {e}")
+            # Fallback to original answer
             return answer
     
     def _perform_search(self, query: str) -> Dict[str, any]:

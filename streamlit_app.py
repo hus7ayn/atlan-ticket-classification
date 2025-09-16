@@ -715,25 +715,6 @@ def main():
                                 for i, source in enumerate(sources, 1):
                                     st.markdown(f"{i}. [{source}]({source})")
         
-        # Example queries
-        st.markdown("---")
-        st.markdown("#### 💡 Example Questions")
-        example_cols = st.columns(2)
-        with example_cols[0]:
-            if st.button("How to connect Snowflake?", use_container_width=True):
-                st.session_state.example_query = "How to connect Snowflake to Atlan?"
-            if st.button("API authentication methods", use_container_width=True):
-                st.session_state.example_query = "What are the API authentication methods in Atlan?"
-        with example_cols[1]:
-            if st.button("Set up data lineage", use_container_width=True):
-                st.session_state.example_query = "How to set up data lineage in Atlan?"
-            if st.button("Troubleshoot connector issues", use_container_width=True):
-                st.session_state.example_query = "How to troubleshoot connector issues in Atlan?"
-        
-        # Handle example query selection
-        if 'example_query' in st.session_state:
-            st.text_area("Enter your question about Atlan:", value=st.session_state.example_query, height=120)
-            del st.session_state.example_query
     
     # Tab 2: Classification Report
     with tab2:
