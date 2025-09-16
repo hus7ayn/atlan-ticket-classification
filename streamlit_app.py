@@ -16,7 +16,10 @@ from ticket_classifier import TicketClassifier
 from smart_ticket_processor import SmartTicketProcessor
 from ticket_api import TicketAPI
 from utils import load_tickets_data, save_csv_report
-from config import DEFAULT_REPORT_FILENAME, DEFAULT_CSV_FILENAME
+from config import DEFAULT_REPORT_FILENAME, DEFAULT_CSV_FILENAME, debug_api_keys
+
+# Debug API keys on startup
+debug_api_keys()
 
 # Page configuration
 st.set_page_config(
