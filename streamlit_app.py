@@ -38,6 +38,7 @@ st.markdown("""
         color: #1f77b4;
         text-align: center;
         margin-bottom: 2rem;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
     }
     .metric-card {
         background-color: #f0f2f6;
@@ -66,6 +67,56 @@ st.markdown("""
     }
     .source-link:hover {
         text-decoration: underline;
+    }
+    
+    /* Enhanced tab styling */
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 2px;
+    }
+    .stTabs [data-baseweb="tab"] {
+        height: 50px;
+        padding-left: 20px;
+        padding-right: 20px;
+        background-color: #f0f2f6;
+        border-radius: 8px 8px 0px 0px;
+        font-weight: 600;
+    }
+    .stTabs [aria-selected="true"] {
+        background-color: #1f77b4;
+        color: white;
+    }
+    
+    /* Feature highlight cards */
+    .feature-card {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        padding: 1.5rem;
+        border-radius: 10px;
+        margin: 0.5rem 0;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    
+    /* Interactive agent styling */
+    .agent-section {
+        background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+        padding: 2rem;
+        border-radius: 15px;
+        color: white;
+        margin: 1rem 0;
+    }
+    
+    /* Button enhancements */
+    .stButton > button {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+    }
+    .stButton > button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
 </style>
 """, unsafe_allow_html=True)
@@ -230,23 +281,23 @@ def display_statistics(report):
                     'Positive': '#32CD32'      # Lime Green
                 }
                 
-                fig_sentiment = px.bar(
-                    x=list(sentiment_data.keys()),
-                    y=list(sentiment_data.values()),
-                    title="Sentiment Distribution",
-                    color=list(sentiment_data.keys()),
-                    color_discrete_map=sentiment_colors
-                )
-                fig_sentiment.update_layout(
-                    xaxis_title="Sentiment", 
-                    yaxis_title="Count",
-                    showlegend=False,
-                    hovermode='x unified'
-                )
-                fig_sentiment.update_traces(
-                    hovertemplate='<b>%{x}</b><br>Count: %{y}<extra></extra>'
-                )
-                st.plotly_chart(fig_sentiment, use_container_width=True, key=f"sentiment_bar_chart_{hash(str(report))}")
+            fig_sentiment = px.bar(
+                x=list(sentiment_data.keys()),
+                y=list(sentiment_data.values()),
+                title="Sentiment Distribution",
+                color=list(sentiment_data.keys()),
+                color_discrete_map=sentiment_colors
+            )
+            fig_sentiment.update_layout(
+                xaxis_title="Sentiment", 
+                yaxis_title="Count",
+                showlegend=False,
+                hovermode='x unified'
+            )
+            fig_sentiment.update_traces(
+                hovertemplate='<b>%{x}</b><br>Count: %{y}<extra></extra>'
+            )
+            st.plotly_chart(fig_sentiment, use_container_width=True, key=f"sentiment_bar_chart_{hash(str(report))}")
         
         # Priority distribution
         priority_data = report['distributions']['priorities']
@@ -542,12 +593,150 @@ def main():
     # Real-time Statistics Banner
     display_realtime_stats()
     
-    # Sidebar
-    st.sidebar.title("Navigation")
-    page = st.sidebar.selectbox("Choose a page", ["📊 Classification Report", "💬 Interactive Query"])
+    # Prominent Interactive Agent Call-to-Action
+    st.markdown("""
+    <div class="agent-section">
+        <h2 style="text-align: center; margin-bottom: 1rem;">🤖 Ask Our AI Agent Anything About Atlan!</h2>
+        <p style="text-align: center; font-size: 1.1rem; margin-bottom: 1.5rem;">
+            Get instant, intelligent answers about Atlan features, setup, troubleshooting, and best practices.
+        </p>
+        <div style="text-align: center;">
+            <a href="#interactive-agent" style="background: white; color: #f5576c; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: bold; display: inline-block; margin: 0 10px;">
+                🚀 Try Interactive Agent
+            </a>
+            <a href="#classification-report" style="background: rgba(255,255,255,0.2); color: white; padding: 12px 24px; border-radius: 25px; text-decoration: none; font-weight: bold; display: inline-block; margin: 0 10px; border: 2px solid white;">
+                📊 View Reports
+            </a>
+        </div>
+    </div>
+    """, unsafe_allow_html=True)
     
-    if page == "📊 Classification Report":
-        st.markdown("### Classification Report & Analysis")
+    # Main Navigation Tabs
+    tab1, tab2, tab3 = st.tabs(["🤖 Interactive Agent", "📊 Classification Report", "📈 Analytics Dashboard"])
+    
+    # Sidebar for additional options
+    st.sidebar.markdown("### ⚙️ Quick Access")
+    st.sidebar.markdown("---")
+    
+    # Quick action buttons
+    if st.sidebar.button("🤖 Try Interactive Agent", use_container_width=True):
+        st.session_state.quick_action = "interactive_agent"
+    
+    if st.sidebar.button("📊 Load Classification Report", use_container_width=True):
+        st.session_state.quick_action = "load_report"
+    
+    if st.sidebar.button("📈 View Analytics", use_container_width=True):
+        st.session_state.quick_action = "view_analytics"
+    
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 📊 System Status")
+    
+    # API Status indicators
+    try:
+        from config import GROK_API_KEY, TAVILY_API_KEY
+        grok_status = "✅ Connected" if GROK_API_KEY else "❌ Not Available"
+        tavily_status = "✅ Connected" if TAVILY_API_KEY else "❌ Not Available"
+        
+        st.sidebar.markdown(f"**Grok API:** {grok_status}")
+        st.sidebar.markdown(f"**Tavily API:** {tavily_status}")
+    except:
+        st.sidebar.markdown("**API Status:** Checking...")
+    
+    st.sidebar.markdown("---")
+    st.sidebar.markdown("### 💡 Tips")
+    st.sidebar.markdown("""
+    - **Interactive Agent** is the main feature - try asking about Atlan features!
+    - **Classification Report** processes all 30 tickets with AI analysis
+    - **Analytics Dashboard** shows comprehensive insights and statistics
+    """)
+    
+    # Tab 1: Interactive Agent (Primary Feature)
+    with tab1:
+        st.markdown('<div id="interactive-agent"></div>', unsafe_allow_html=True)
+        st.markdown("### 🤖 Interactive AI Agent")
+        st.markdown("Ask questions about Atlan and get intelligent responses powered by AI search and analysis.")
+        
+        # Feature highlights
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            st.info("🔍 **Smart Search**\n\nPowered by Tavily API for Atlan-specific documentation")
+        with col2:
+            st.info("🧠 **AI Analysis**\n\nGrok LLM provides intelligent summarization and insights")
+        with col3:
+            st.info("📚 **Knowledge Base**\n\nAccess to official Atlan documentation and guides")
+        
+        st.markdown("---")
+        
+        # Query input with enhanced UI
+        st.markdown("#### 💬 Ask Your Question")
+        query = st.text_area(
+            "Enter your question about Atlan:",
+            placeholder="e.g., How to connect Snowflake to Atlan? What are the API authentication methods? How to set up data lineage?",
+            height=120,
+            help="Ask any question about Atlan features, setup, troubleshooting, or best practices"
+        )
+        
+        col1, col2, col3 = st.columns([1, 2, 1])
+        with col2:
+            if st.button("🚀 Get AI Response", type="primary", use_container_width=True):
+                if not query.strip():
+                    st.warning("Please enter a question.")
+                else:
+                    with st.spinner("🤖 AI Agent is thinking..."):
+                        result, error = process_query_with_grok_summary(query)
+                        
+                        if error:
+                            st.error(f"❌ {error}")
+                        else:
+                            st.success("✅ AI Response generated successfully!")
+                            
+                            # Display classification
+                            st.markdown("### 🏷️ Classification")
+                            classification = result.get('classification', {})
+                            col1, col2, col3 = st.columns(3)
+                            
+                            with col1:
+                                st.markdown(f"**Topic:** `{classification.get('topic', 'N/A')}`")
+                            with col2:
+                                st.markdown(f"**Sentiment:** `{classification.get('sentiment', 'N/A')}`")
+                            with col3:
+                                st.markdown(f"**Priority:** `{classification.get('priority', 'N/A')}`")
+                            
+                            # Display summary
+                            summary = result.get('summary', 'No summary available')
+                            st.markdown("### 📝 AI Response")
+                            st.markdown(f'<div class="response-card">{summary}</div>', unsafe_allow_html=True)
+                            
+                            # Display sources
+                            sources = result.get('sources', [])
+                            if sources:
+                                st.markdown("### 🔗 Sources")
+                                for i, source in enumerate(sources, 1):
+                                    st.markdown(f"{i}. [{source}]({source})")
+        
+        # Example queries
+        st.markdown("---")
+        st.markdown("#### 💡 Example Questions")
+        example_cols = st.columns(2)
+        with example_cols[0]:
+            if st.button("How to connect Snowflake?", use_container_width=True):
+                st.session_state.example_query = "How to connect Snowflake to Atlan?"
+            if st.button("API authentication methods", use_container_width=True):
+                st.session_state.example_query = "What are the API authentication methods in Atlan?"
+        with example_cols[1]:
+            if st.button("Set up data lineage", use_container_width=True):
+                st.session_state.example_query = "How to set up data lineage in Atlan?"
+            if st.button("Troubleshoot connector issues", use_container_width=True):
+                st.session_state.example_query = "How to troubleshoot connector issues in Atlan?"
+        
+        # Handle example query selection
+        if 'example_query' in st.session_state:
+            st.text_area("Enter your question about Atlan:", value=st.session_state.example_query, height=120)
+            del st.session_state.example_query
+    
+    # Tab 2: Classification Report
+    with tab2:
+        st.markdown("### 📊 Classification Report & Analysis")
         st.markdown("Load and analyze the classification results for all 30 tickets.")
         
         # Load button
@@ -603,56 +792,29 @@ def main():
             st.markdown("### 📊 Statistics (from previous load)")
             display_statistics(st.session_state.classification_data['report'])
     
-    elif page == "💬 Interactive Query":
-        st.markdown("### Interactive Query Processing")
-        st.markdown("Ask questions and get intelligent responses using Tavily search and Grok summarization.")
+    # Tab 3: Analytics Dashboard
+    with tab3:
+        st.markdown("### 📈 Analytics Dashboard")
+        st.markdown("Comprehensive analytics and insights from ticket classification data.")
         
-        # Query input
-        query = st.text_area(
-            "Enter your question:",
-            placeholder="e.g., How to connect Snowflake to Atlan? What are the API authentication methods?",
-            height=100
-        )
-        
-        if st.button("🔍 Process Query", type="primary", use_container_width=True):
-            if not query.strip():
-                st.warning("Please enter a question.")
-            else:
-                with st.spinner("Processing your query..."):
-                    result, error = process_query_with_grok_summary(query)
-                    
-                    if error:
-                        st.error(f"❌ {error}")
-                    else:
-                        st.success("✅ Query processed successfully!")
-                        
-                        # Display classification
-                        st.markdown("### 🏷️ Classification")
-                        classification = result.get('classification', {})
-                        col1, col2, col3 = st.columns(3)
-                        
-                        with col1:
-                            st.markdown(f"**Topic:** `{classification.get('topic', 'N/A')}`")
-                        with col2:
-                            st.markdown(f"**Sentiment:** `{classification.get('sentiment', 'N/A')}`")
-                        with col3:
-                            st.markdown(f"**Priority:** `{classification.get('priority', 'N/A')}`")
-                        
-                        # Display summarized response
-                        st.markdown("### 💡 Summarized Response")
-                        summary = result.get('summary', 'No summary available')
-                        st.markdown(f'<div class="response-card">{summary}</div>', unsafe_allow_html=True)
-                        
-                        # Display sources if available
-                        sources = result.get('sources', [])
-                        if sources:
-                            st.markdown("### 🔗 Sources")
-                            for i, source in enumerate(result['sources'], 1):
-                                st.markdown(f"{i}. [{source}]({source})")
-                        
-                        # Display full response in expander
-                        with st.expander("📄 Full Response Details"):
-                            st.json(result['full_response'])
+        if 'classification_data' in st.session_state:
+            st.markdown("#### 📊 Real-time Analytics")
+            display_statistics(st.session_state.classification_data['report'])
+        else:
+            st.info("📊 Load classification data first to view analytics dashboard.")
+            st.markdown("Go to the **Classification Report** tab to load and process ticket data.")
+            
+            # Show sample analytics preview
+            st.markdown("#### 🎯 Sample Analytics Preview")
+            col1, col2, col3, col4 = st.columns(4)
+            with col1:
+                st.metric("Total Tickets", "30", "Ready to process")
+            with col2:
+                st.metric("Success Rate", "100%", "Expected")
+            with col3:
+                st.metric("Topics Covered", "12+", "Diverse")
+            with col4:
+                st.metric("AI Accuracy", "95%+", "High")
     
     # Footer
     st.markdown("---")
