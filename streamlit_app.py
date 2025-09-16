@@ -171,7 +171,7 @@ def display_statistics(report):
                 color_discrete_sequence=px.colors.qualitative.Set3
             )
             fig_topics.update_traces(textposition='inside', textinfo='percent+label')
-            st.plotly_chart(fig_topics, use_container_width=True, key=f"topic_pie_chart_{id(report)}")
+            st.plotly_chart(fig_topics, use_container_width=True, key=f"topic_pie_chart_{hash(str(report))}")
     
     with col2:
         # Sentiment distribution
@@ -185,7 +185,7 @@ def display_statistics(report):
                 color_continuous_scale="Viridis"
             )
             fig_sentiment.update_layout(xaxis_title="Sentiment", yaxis_title="Count")
-            st.plotly_chart(fig_sentiment, use_container_width=True, key=f"sentiment_bar_chart_{id(report)}")
+            st.plotly_chart(fig_sentiment, use_container_width=True, key=f"sentiment_bar_chart_{hash(str(report))}")
     
     # Priority distribution
     priority_data = report['distributions']['priorities']
@@ -198,7 +198,7 @@ def display_statistics(report):
             color_continuous_scale="Reds"
         )
         fig_priority.update_layout(xaxis_title="Priority", yaxis_title="Count")
-        st.plotly_chart(fig_priority, use_container_width=True, key=f"priority_bar_chart_{id(report)}")
+        st.plotly_chart(fig_priority, use_container_width=True, key=f"priority_bar_chart_{hash(str(report))}")
 
 def process_query_with_grok_summary(query):
     """Process query and get Grok-summarized response"""
@@ -324,22 +324,24 @@ def main():
                         
                         # Display classification
                         st.markdown("### 🏷️ Classification")
-                        classification = result['classification']
+                        classification = result.get('classification', {})
                         col1, col2, col3 = st.columns(3)
                         
                         with col1:
-                            st.markdown(f"**Topic:** `{classification['topic']}`")
+                            st.markdown(f"**Topic:** `{classification.get('topic', 'N/A')}`")
                         with col2:
-                            st.markdown(f"**Sentiment:** `{classification['sentiment']}`")
+                            st.markdown(f"**Sentiment:** `{classification.get('sentiment', 'N/A')}`")
                         with col3:
-                            st.markdown(f"**Priority:** `{classification['priority']}`")
+                            st.markdown(f"**Priority:** `{classification.get('priority', 'N/A')}`")
                         
                         # Display summarized response
                         st.markdown("### 💡 Summarized Response")
-                        st.markdown(f'<div class="response-card">{result["summary"]}</div>', unsafe_allow_html=True)
+                        summary = result.get('summary', 'No summary available')
+                        st.markdown(f'<div class="response-card">{summary}</div>', unsafe_allow_html=True)
                         
                         # Display sources if available
-                        if result['sources']:
+                        sources = result.get('sources', [])
+                        if sources:
                             st.markdown("### 🔗 Sources")
                             for i, source in enumerate(result['sources'], 1):
                                 st.markdown(f"{i}. [{source}]({source})")
