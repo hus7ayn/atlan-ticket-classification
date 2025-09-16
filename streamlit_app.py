@@ -403,7 +403,7 @@ def display_statistics(report):
                     }
                 ))
                 fig_gauge.update_layout(height=300)
-                st.plotly_chart(fig_gauge, use_container_width=True)
+                st.plotly_chart(fig_gauge, use_container_width=True, key=f"gauge_chart_{uuid.uuid4().hex[:8]}")
             
             with col2:
                 st.dataframe(
@@ -465,7 +465,7 @@ def display_statistics(report):
             fig_resources.update_traces(
                 hovertemplate='<b>%{x}</b><br>Utilization: %{y}%<extra></extra>'
             )
-            st.plotly_chart(fig_resources, use_container_width=True)
+            st.plotly_chart(fig_resources, use_container_width=True, key=f"resources_chart_{uuid.uuid4().hex[:8]}")
     
     # Summary Insights
     st.markdown("#### 💡 Key Insights")
