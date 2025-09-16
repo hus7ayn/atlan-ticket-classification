@@ -35,7 +35,7 @@ Ticket Query → Classification → Topic Check → Tavily Search → Response G
 
 ### Environment Variables
 ```bash
-TAVILY_API_KEY=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
+TAVILY_API_KEY=your_tavily_api_key_here
 ```
 
 ### API Key Storage
