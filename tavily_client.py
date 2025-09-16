@@ -7,28 +7,82 @@ import requests
 import json
 from typing import Dict, List, Optional, Tuple
 from config import TAVILY_API_KEY, TAVILY_API_URL
+from grok_client import GrokClient
 
 class TavilyClient:
     def __init__(self):
         self.api_key = TAVILY_API_KEY
         self.api_url = TAVILY_API_URL
+        self.grok_client = GrokClient()
         self.knowledge_base = {
             "product": "https://docs.atlan.com/",
             "api_sdk": "https://developer.atlan.com/"
         }
+    
+    def optimize_query_for_tavily(self, query: str, topic: str) -> str:
+        """
+        Use Grok to extract key search terms from a long query for Tavily search
+        """
+        try:
+            # Create a prompt to extract key search terms and context
+            optimization_prompt = f"""
+            Extract the most important search terms and context from this user query for searching Atlan documentation.
+            
+            User Query: "{query}"
+            Topic: {topic}
+            
+            Please provide a comprehensive search query that includes:
+            - Key technical terms
+            - Specific feature names
+            - Action words and verbs
+            - Context and requirements
+            - Specific use cases mentioned
+            
+            Make the search query detailed and specific to help find the most relevant and comprehensive documentation.
+            Return only the search terms and context, no explanations.
+            Keep it under 300 characters total.
+            """
+            
+            # Use Grok to optimize the query
+            result = self.grok_client.classify_ticket({
+                'id': 'QUERY_OPT',
+                'subject': 'Optimize Search Query',
+                'body': optimization_prompt
+            })
+            
+            if result.get('status') == 'success':
+                # Extract the optimized query from the response
+                optimized_query = result.get('classification', {}).get('reasoning', {}).get('topic_reasoning', '')
+                if optimized_query and len(optimized_query) < 400:
+                    return optimized_query.strip()
+            
+            # Fallback: truncate original query if optimization fails
+            if len(query) > 400:
+                return query[:397] + "..."
+            return query
+            
+        except Exception as e:
+            print(f"Error optimizing query: {e}")
+            # Fallback: truncate original query
+            if len(query) > 400:
+                return query[:397] + "..."
+            return query
     
     def search_and_answer(self, query: str, topic: str) -> Dict[str, any]:
         """
         Search for information and generate an answer based on the topic
         """
         try:
+            # Optimize the query for Tavily (handle long queries)
+            optimized_query = self.optimize_query_for_tavily(query, topic)
+            
             # Determine the appropriate knowledge base
             if topic.lower() in ["api/sdk"]:
                 knowledge_base = self.knowledge_base["api_sdk"]
-                search_query = f"site:developer.atlan.com {query}"
+                search_query = f"site:developer.atlan.com {optimized_query}"
             elif topic.lower() in ["how-to", "product", "best practices", "sso"]:
                 knowledge_base = self.knowledge_base["product"]
-                search_query = f"site:docs.atlan.com {query}"
+                search_query = f"site:docs.atlan.com {optimized_query}"
             else:
                 return {
                     "success": False,
@@ -41,12 +95,12 @@ class TavilyClient:
             if not search_results["success"]:
                 return search_results
             
-            # Generate answer from search results
-            answer = self._generate_answer(query, search_results["results"], topic)
+            # Enhance the response to be more detailed and tailored
+            enhanced_answer = self._enhance_response(search_results["answer"], query, topic, search_results.get("results", []))
             
             return {
                 "success": True,
-                "answer": answer,
+                "answer": enhanced_answer,
                 "sources": search_results["sources"],
                 "knowledge_base": knowledge_base,
                 "search_query": search_query
@@ -58,6 +112,67 @@ class TavilyClient:
                 "error": f"Error generating answer: {str(e)}"
             }
     
+    def _enhance_response(self, answer: str, original_query: str, topic: str, search_results: List[Dict]) -> str:
+        """
+        Enhance Tavily's response to be more detailed and tailored to the user's query
+        """
+        try:
+            # If the answer is already comprehensive (more than 200 characters), return as is
+            if len(answer) > 200:
+                return answer
+            
+            # If we have search results, use them to provide more context
+            if search_results and len(search_results) > 0:
+                # Extract key information from search results
+                additional_context = []
+                for result in search_results[:3]:  # Use top 3 results
+                    title = result.get('title', '')
+                    content = result.get('content', '')
+                    if title and content:
+                        # Extract relevant snippets
+                        snippet = content[:300] + "..." if len(content) > 300 else content
+                        additional_context.append(f"**{title}**: {snippet}")
+                
+                if additional_context:
+                    enhanced_answer = f"{answer}\n\n**Additional Details:**\n\n" + "\n\n".join(additional_context)
+                    return enhanced_answer
+            
+            # If answer is too short, try to expand it with context
+            if len(answer) < 100:
+                context_prompt = f"""
+                The user asked: "{original_query}"
+                Topic: {topic}
+                
+                The current answer is: "{answer}"
+                
+                Please provide a more detailed and comprehensive answer that directly addresses the user's specific question.
+                Include:
+                - Step-by-step instructions if applicable
+                - Specific examples or use cases
+                - Important considerations or prerequisites
+                - Links to relevant documentation sections
+                
+                Make it detailed and actionable for the user.
+                """
+                
+                # Use Grok to enhance the response
+                result = self.grok_client.classify_ticket({
+                    'id': 'ENHANCE_RESPONSE',
+                    'subject': 'Enhance Response',
+                    'body': context_prompt
+                })
+                
+                if result.get('status') == 'success':
+                    enhanced = result.get('classification', {}).get('reasoning', {}).get('topic_reasoning', '')
+                    if enhanced and len(enhanced) > len(answer):
+                        return enhanced
+            
+            return answer
+            
+        except Exception as e:
+            print(f"Error enhancing response: {e}")
+            return answer
+    
     def _perform_search(self, query: str) -> Dict[str, any]:
         """
         Perform Tavily search
@@ -68,10 +183,12 @@ class TavilyClient:
                 "query": query,
                 "search_depth": "advanced",
                 "include_answer": True,
-                "include_raw_content": False,
-                "max_results": 5,
+                "include_raw_content": True,  # Include raw content for more detailed responses
+                "max_results": 8,  # Get more results for comprehensive answers
                 "include_domains": [],
-                "exclude_domains": []
+                "exclude_domains": [],
+                "answer_style": "detailed",  # Request detailed answers
+                "answer_length": "long"  # Request longer, more comprehensive answers
             }
             
             response = requests.post(

@@ -105,7 +105,7 @@ def display_ticket_details(ticket_data, classification_result):
             st.markdown("**Ticket Content:**")
             st.markdown(f"**Subject:** {ticket_data.get('subject', 'N/A')}")
             st.markdown(f"**Body:**")
-            st.text_area("", value=ticket_data.get('body', 'N/A'), height=150, disabled=True, key=f"body_{ticket_data.get('id')}")
+            st.text_area("Ticket Body", value=ticket_data.get('body', 'N/A'), height=150, disabled=True, key=f"body_{ticket_data.get('id')}", label_visibility="collapsed")
         
         with col2:
             classification = classification_result.get('classification', {})
@@ -171,7 +171,7 @@ def display_statistics(report):
                 color_discrete_sequence=px.colors.qualitative.Set3
             )
             fig_topics.update_traces(textposition='inside', textinfo='percent+label')
-            st.plotly_chart(fig_topics, use_container_width=True)
+            st.plotly_chart(fig_topics, use_container_width=True, key="topic_pie_chart")
     
     with col2:
         # Sentiment distribution
@@ -185,7 +185,7 @@ def display_statistics(report):
                 color_continuous_scale="Viridis"
             )
             fig_sentiment.update_layout(xaxis_title="Sentiment", yaxis_title="Count")
-            st.plotly_chart(fig_sentiment, use_container_width=True)
+            st.plotly_chart(fig_sentiment, use_container_width=True, key="sentiment_bar_chart")
     
     # Priority distribution
     priority_data = report['distributions']['priorities']
@@ -198,7 +198,7 @@ def display_statistics(report):
             color_continuous_scale="Reds"
         )
         fig_priority.update_layout(xaxis_title="Priority", yaxis_title="Count")
-        st.plotly_chart(fig_priority, use_container_width=True)
+        st.plotly_chart(fig_priority, use_container_width=True, key="priority_bar_chart")
 
 def process_query_with_grok_summary(query):
     """Process query and get Grok-summarized response"""
@@ -215,42 +215,11 @@ def process_query_with_grok_summary(query):
         # Get the response
         final_response = result['final_response']
         
-        # If it's a Tavily answer, summarize it with Grok
-        if final_response['type'] == 'ai_answer':
-            # Use Grok to summarize the Tavily response
-            from grok_client import GrokClient
-            grok_client = GrokClient()
-            
-            # Create a prompt for summarization
-            summarization_prompt = f"""
-            Please summarize the following response about Atlan in a clear, concise way for a user:
-            
-            Original Response: {final_response['answer']}
-            
-            Please provide:
-            1. A brief summary (2-3 sentences)
-            2. Key points (3-5 bullet points)
-            3. Next steps if applicable
-            
-            Keep it user-friendly and actionable.
-            """
-            
-            # Get Grok summary
-            summary_result = grok_client.grok_client.classify_ticket({
-                'id': 'SUMMARY',
-                'subject': 'Summarize Response',
-                'body': summarization_prompt
-            })
-            
-            if summary_result.get('status') == 'success':
-                # Extract the summary from the response
-                summary_text = summary_result.get('classification', {}).get('reasoning', {}).get('topic_reasoning', '')
-                if not summary_text:
-                    summary_text = final_response['answer'][:500] + "..."
-            else:
-                summary_text = final_response['answer'][:500] + "..."
+        # Use Tavily's response directly (no additional summarization)
+        if final_response['type'] == 'tavily_answer':
+            summary_text = final_response['answer']
         else:
-            summary_text = final_response['message']
+            summary_text = final_response.get('message', final_response.get('answer', 'No response available'))
         
         return {
             'query': query,
@@ -358,7 +327,7 @@ def main():
                         
                         # Display classification
                         st.markdown("### 🏷️ Classification")
-                        classification = result['classification']['classification']
+                        classification = result['classification']
                         col1, col2, col3 = st.columns(3)
                         
                         with col1:
