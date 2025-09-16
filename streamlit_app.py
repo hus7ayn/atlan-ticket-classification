@@ -508,6 +508,10 @@ def process_query_with_grok_summary(query):
         # Use Tavily's response directly (no additional summarization)
         if final_response['type'] == 'tavily_answer':
             summary_text = final_response['answer']
+            # Ensure we have the full response
+            if len(summary_text) < 100:
+                print(f"⚠️ Short response detected: {len(summary_text)} characters")
+                print(f"Response preview: {summary_text[:200]}...")
         else:
             summary_text = final_response.get('message', final_response.get('answer', 'No response available'))
         
@@ -706,7 +710,13 @@ def main():
                             # Display summary
                             summary = result.get('summary', 'No summary available')
                             st.markdown("### 📝 AI Response")
-                            st.markdown(f'<div class="response-card">{summary}</div>', unsafe_allow_html=True)
+                            
+                            # Use expandable container for long responses
+                            if len(summary) > 500:
+                                with st.expander("📖 View Complete Response", expanded=True):
+                                    st.markdown(f'<div class="response-card">{summary}</div>', unsafe_allow_html=True)
+                            else:
+                                st.markdown(f'<div class="response-card">{summary}</div>', unsafe_allow_html=True)
                             
                             # Display sources
                             sources = result.get('sources', [])

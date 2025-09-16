@@ -130,8 +130,8 @@ class TavilyClient:
                     content = result.get('content', '')
                     url = result.get('url', '')
                     if title and content:
-                        # Extract relevant snippets (longer for better context)
-                        snippet = content[:500] + "..." if len(content) > 500 else content
+                        # Extract more comprehensive snippets for better context
+                        snippet = content[:800] + "..." if len(content) > 800 else content
                         context_parts.append(f"Source {i} - {title}:\n{snippet}\nURL: {url}")
                 
                 if context_parts:
@@ -149,7 +149,7 @@ class TavilyClient:
             {context_info}
             
             Please provide a comprehensive, well-structured response that:
-            1. Directly answers the user's specific question
+            1. Directly answers the user's specific question with complete information
             2. Uses the provided context to give accurate, detailed information
             3. Includes step-by-step instructions where applicable
             4. Mentions specific Atlan features, settings, or configurations
@@ -157,9 +157,12 @@ class TavilyClient:
             6. Includes important considerations, prerequisites, or troubleshooting tips
             7. References specific documentation sections when relevant
             8. Is written in a helpful, professional tone
+            9. Provides complete answers without truncation
+            10. Includes all relevant details from the sources
             
             Structure your response with clear headings and bullet points for easy reading.
             Focus on being actionable and specific to Atlan's platform.
+            Make sure to provide a complete, comprehensive answer that fully addresses the user's query.
             """
             
             # Use Grok to generate a tailored response
@@ -180,15 +183,28 @@ class TavilyClient:
                     if summary and len(summary) > len(answer):
                         return summary
             
-            # If Grok enhancement fails, return the original answer with basic context
+            # If Grok enhancement fails, return the original answer with comprehensive context
             if context_info:
-                return f"{answer}\n\n**Additional Context:**\n{context_info[:1000]}..."
+                return f"{answer}\n\n**Additional Context:**\n{context_info}"
             
             return answer
             
         except Exception as e:
             print(f"Error enhancing response with Grok: {e}")
-            # Fallback to original answer
+            # Fallback to original answer with context
+            if search_results and len(search_results) > 0:
+                context_parts = []
+                for i, result in enumerate(search_results[:3], 1):
+                    title = result.get('title', '')
+                    content = result.get('content', '')
+                    url = result.get('url', '')
+                    if title and content:
+                        snippet = content[:500] + "..." if len(content) > 500 else content
+                        context_parts.append(f"**{title}:**\n{snippet}\n*Source: {url}*")
+                
+                if context_parts:
+                    return f"{answer}\n\n**Additional Information:**\n\n" + "\n\n".join(context_parts)
+            
             return answer
     
     def _perform_search(self, query: str) -> Dict[str, any]:
@@ -211,7 +227,7 @@ class TavilyClient:
                 "search_depth": "advanced",
                 "include_answer": True,
                 "include_raw_content": True,  # Include raw content for more detailed responses
-                "max_results": 8,  # Get more results for comprehensive answers
+                "max_results": 10,  # Get more results for comprehensive answers
                 "include_domains": atlan_domains,  # Focus on Atlan domains only
                 "exclude_domains": [
                     "stackoverflow.com",
@@ -222,7 +238,8 @@ class TavilyClient:
                     "github.com"
                 ],  # Exclude generic programming sites
                 "answer_style": "detailed",  # Request detailed answers
-                "answer_length": "long"  # Request longer, more comprehensive answers
+                "answer_length": "long",  # Request longer, more comprehensive answers
+                "include_images": False  # Focus on text content
             }
             
             response = requests.post(
@@ -325,11 +342,11 @@ class TavilyClient:
             payload = {
                 "api_key": self.api_key,
                 "query": atlan_specific_query,
-                "search_depth": "basic",
+                "search_depth": "advanced",
                 "include_answer": True,
                 "include_raw_content": True,
-                "max_results": 5,
-                "include_domains": ["developer.atlan.com", "docs.atlan.com"],
+                "max_results": 8,
+                "include_domains": ["developer.atlan.com", "docs.atlan.com", "atlan.com"],
                 "exclude_domains": [
                     "stackoverflow.com",
                     "quora.com", 
@@ -338,7 +355,7 @@ class TavilyClient:
                     "dev.to"
                 ],
                 "answer_style": "detailed",
-                "answer_length": "medium"
+                "answer_length": "long"
             }
             
             response = requests.post(
