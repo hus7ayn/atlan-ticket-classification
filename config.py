@@ -8,12 +8,18 @@ load_dotenv()
 try:
     import streamlit as st
     # Use Streamlit secrets if available (for cloud deployment)
-    if hasattr(st, 'secrets') and st.secrets:
-        GROK_API_KEY = st.secrets.get('GROK_API_KEY')
-        TAVILY_API_KEY = st.secrets.get('TAVILY_API_KEY')
-        GROK_MODEL = st.secrets.get('GROK_MODEL', 'gemma2-9b-it')
-    else:
-        # Fallback to environment variables (for local development)
+    try:
+        if hasattr(st, 'secrets') and st.secrets:
+            GROK_API_KEY = st.secrets.get('GROK_API_KEY')
+            TAVILY_API_KEY = st.secrets.get('TAVILY_API_KEY')
+            GROK_MODEL = st.secrets.get('GROK_MODEL', 'gemma2-9b-it')
+        else:
+            # Fallback to environment variables (for local development)
+            GROK_API_KEY = os.getenv('GROK_API_KEY')
+            TAVILY_API_KEY = os.getenv('TAVILY_API_KEY')
+            GROK_MODEL = os.getenv('GROK_MODEL', 'gemma2-9b-it')
+    except Exception:
+        # Fallback to environment variables if secrets access fails
         GROK_API_KEY = os.getenv('GROK_API_KEY')
         TAVILY_API_KEY = os.getenv('TAVILY_API_KEY')
         GROK_MODEL = os.getenv('GROK_MODEL', 'gemma2-9b-it')
